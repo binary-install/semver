@@ -46,7 +46,12 @@ func TestMaxSatisfying(t *testing.T) {
 			owner:      "test",
 			repo:       "repo",
 			constraint: "^1.0.0",
-			tags:       []string{"v1.0.0", "v1.1.0", "v1.2.0", "v2.0.0"},
+			releases: []github.Release{
+				{Tag: "v1.0.0", Draft: false},
+				{Tag: "v1.1.0", Draft: false},
+				{Tag: "v1.2.0", Draft: false},
+				{Tag: "v2.0.0", Draft: false},
+			},
 			want:       "v1.2.0",
 			wantErr:    false,
 		},
@@ -57,6 +62,7 @@ func TestMaxSatisfying(t *testing.T) {
 			constraint: "~1.1.0",
 			tags:       []string{"v1.0.0", "v1.1.0", "v1.1.5", "v1.2.0"},
 			opts: &semver.Options{
+				IncludeTags: true,
 				GitHubClient: &mockGitHubClient{
 					tags: []string{"v1.0.0", "v1.1.0", "v1.1.5", "v1.2.0"},
 				},
@@ -69,11 +75,19 @@ func TestMaxSatisfying(t *testing.T) {
 			owner:      "test",
 			repo:       "repo",
 			constraint: "^1.0.0",
-			tags:       []string{"v1.0.0", "v1.1.0-beta", "v1.2.0"},
+			releases: []github.Release{
+				{Tag: "v1.0.0", Prerelease: false},
+				{Tag: "v1.1.0-beta", Prerelease: true},
+				{Tag: "v1.2.0", Prerelease: false},
+			},
 			opts: &semver.Options{
 				IncludePrerelease: true,
 				GitHubClient: &mockGitHubClient{
-					tags: []string{"v1.0.0", "v1.1.0-beta", "v1.2.0"},
+					releases: []github.Release{
+						{Tag: "v1.0.0", Prerelease: false},
+						{Tag: "v1.1.0-beta", Prerelease: true},
+						{Tag: "v1.2.0", Prerelease: false},
+					},
 				},
 			},
 			want:    "v1.2.0",
@@ -107,7 +121,9 @@ func TestMaxSatisfying(t *testing.T) {
 			owner:      "test",
 			repo:       "repo",
 			constraint: "invalid",
-			tags:       []string{"v1.0.0"},
+			releases: []github.Release{
+				{Tag: "v1.0.0", Draft: false},
+			},
 			want:       "",
 			wantErr:    true,
 		},
@@ -142,7 +158,11 @@ func TestMaxSatisfying(t *testing.T) {
 
 func TestMaxSatisfyingWithToken(t *testing.T) {
 	mockClient := &mockGitHubClient{
-		tags: []string{"v1.0.0", "v1.1.0", "v2.0.0"},
+		releases: []github.Release{
+			{Tag: "v1.0.0", Draft: false},
+			{Tag: "v1.1.0", Draft: false},
+			{Tag: "v2.0.0", Draft: false},
+		},
 	}
 
 	// We can't easily test the token functionality without a real GitHub API,

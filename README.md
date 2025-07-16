@@ -7,7 +7,7 @@ A Go library and CLI tool for resolving semantic version constraints against Git
 - 🔍 Resolve semantic version constraints against GitHub repositories
 - 📚 Available as both a Go library and CLI tool
 - 🔐 GitHub token authentication support
-- 🏷️ Support for both tags and releases
+- 🏷️ Support for GitHub releases (tags optional via flag)
 - 🚀 Prerelease and draft release filtering
 - ⚡ Efficient pagination and rate limit handling
 - 🛡️ Comprehensive error handling
@@ -47,6 +47,9 @@ semver resolve golang/go@">=1.20.0 <1.22.0"
 
 # Include prereleases
 semver resolve --prerelease golang/go@^1.21.0
+
+# Include git tags (by default only releases are used)
+semver resolve --tags golang/go@^1.21.0
 
 # With custom token
 semver resolve --token ghp_xxxxx golang/go@^1.21.0
@@ -99,6 +102,7 @@ func main() {
         Token:             "ghp_your_token",
         IncludePrerelease: true,
         IncludeDraft:      false,
+        IncludeTags:       false, // Only use releases by default
     }
     version, err = semver.MaxSatisfying(ctx, "owner", "repo", "^1.0.0", opts)
     if err != nil {

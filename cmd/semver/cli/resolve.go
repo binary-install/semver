@@ -17,6 +17,7 @@ var (
 	token             string
 	includePrerelease bool
 	includeDraft      bool
+	includeTags       bool
 	timeout           time.Duration
 )
 
@@ -51,6 +52,7 @@ func init() {
 	resolveCmd.Flags().StringVar(&token, "token", "", "GitHub personal access token (defaults to GITHUB_TOKEN or GH_TOKEN env var)")
 	resolveCmd.Flags().BoolVar(&includePrerelease, "prerelease", false, "Include prerelease versions")
 	resolveCmd.Flags().BoolVar(&includeDraft, "draft", false, "Include draft releases")
+	resolveCmd.Flags().BoolVar(&includeTags, "tags", false, "Include git tags in addition to releases")
 	resolveCmd.Flags().DurationVar(&timeout, "timeout", 30*time.Second, "Request timeout")
 }
 
@@ -97,6 +99,7 @@ func runResolve(cmd *cobra.Command, args []string) error {
 	opts := resolver.Options{
 		IncludePrerelease: includePrerelease,
 		IncludeDraft:      includeDraft,
+		IncludeTags:       includeTags,
 	}
 	r := resolver.New(githubClient, opts)
 

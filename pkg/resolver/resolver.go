@@ -17,4 +17,7 @@ type Options struct {
 	IncludePrerelease bool
 	// IncludeDraft includes draft releases in the resolution.
 	IncludeDraft bool
+	// IncludeTags includes git tags in addition to releases.
+	// By default, only GitHub releases are considered.
+	IncludeTags bool
 }

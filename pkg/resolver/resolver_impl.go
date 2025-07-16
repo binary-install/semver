@@ -66,15 +66,14 @@ func (r *resolverImpl) MaxSatisfying(ctx context.Context, owner, repo, constrain
 	return maxVersionString, nil
 }
 
-// getAllVersions fetches all versions from both tags and releases.
+// getAllVersions fetches versions from releases and optionally tags.
 func (r *resolverImpl) getAllVersions(ctx context.Context, owner, repo string) (map[string]*semver.Version, error) {
 	versions := make(map[string]*semver.Version)
 
-	// Fetch releases first (they have more metadata)
+	// Fetch releases (primary source)
 	releases, err := r.githubClient.ListReleases(ctx, owner, repo)
 	if err != nil {
-		// If releases fail, we'll try tags
-		releases = []github.Release{}
+		return nil, fmt.Errorf("failed to fetch releases: %w", err)
 	}
 
 	// Add release versions
@@ -96,35 +95,38 @@ func (r *resolverImpl) getAllVersions(ctx context.Context, owner, repo string) (
 		versions[release.Tag] = version
 	}
 
-	// Fetch tags
-	tags, err := r.githubClient.ListTags(ctx, owner, repo)
-	if err != nil {
-		// If both releases and tags fail, return error
-		if len(versions) == 0 {
-			return nil, err
+	// Only fetch tags if explicitly requested
+	if r.options.IncludeTags {
+		tags, err := r.githubClient.ListTags(ctx, owner, repo)
+		if err != nil {
+			// Log warning but continue with releases
+			// Tags are supplementary when explicitly requested
+			return versions, nil
 		}
-		// Otherwise, continue with what we have from releases
-		return versions, nil
+
+		// Add tag versions (only if not already present from releases)
+		for _, tag := range tags {
+			if _, exists := versions[tag]; exists {
+				continue
+			}
+
+			version, err := parseVersion(tag)
+			if err != nil {
+				continue // Skip invalid versions
+			}
+
+			// For tags, we can't determine if it's a prerelease from metadata,
+			// so we check the version itself
+			if version.Prerelease() != "" && !r.options.IncludePrerelease {
+				continue
+			}
+
+			versions[tag] = version
+		}
 	}
 
-	// Add tag versions (only if not already present from releases)
-	for _, tag := range tags {
-		if _, exists := versions[tag]; exists {
-			continue
-		}
-
-		version, err := parseVersion(tag)
-		if err != nil {
-			continue // Skip invalid versions
-		}
-
-		// For tags, we can't determine if it's a prerelease from metadata,
-		// so we check the version itself
-		if version.Prerelease() != "" && !r.options.IncludePrerelease {
-			continue
-		}
-
-		versions[tag] = version
+	if len(versions) == 0 {
+		return nil, semvererrors.NewNotFoundError(fmt.Sprintf("no valid versions found for %s/%s", owner, repo))
 	}
 
 	return versions, nil

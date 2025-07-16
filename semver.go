@@ -22,6 +22,10 @@ type Options struct {
 	// IncludeDraft includes draft releases in the resolution.
 	IncludeDraft bool
 
+	// IncludeTags includes git tags in addition to releases.
+	// By default, only GitHub releases are considered.
+	IncludeTags bool
+
 	// GitHubClient allows using a custom GitHub client.
 	// If nil, a default client will be created.
 	GitHubClient github.Client
@@ -66,6 +70,7 @@ func MaxSatisfying(ctx context.Context, owner, repo, constraint string, opts *Op
 	resolverOpts := resolver.Options{
 		IncludePrerelease: opts.IncludePrerelease,
 		IncludeDraft:      opts.IncludeDraft,
+		IncludeTags:       opts.IncludeTags,
 	}
 	r := resolver.New(githubClient, resolverOpts)
 
