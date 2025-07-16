@@ -10,7 +10,6 @@ import (
 	"github.com/binary-install/semver/pkg/auth"
 	"github.com/binary-install/semver/pkg/github"
 	"github.com/binary-install/semver/pkg/resolver"
-	semvererrors "github.com/binary-install/semver/internal/errors"
 )
 
 var (
@@ -106,44 +105,10 @@ func runResolve(cmd *cobra.Command, args []string) error {
 	// Resolve version
 	version, err := r.MaxSatisfying(ctx, owner, repo, constraint)
 	if err != nil {
-		return handleError(cmd, err)
+		return err
 	}
 
 	// Output the result
 	fmt.Println(version)
 	return nil
-}
-
-func handleError(cmd *cobra.Command, err error) error {
-	var typedErr semvererrors.TypedError
-	if errors, ok := err.(semvererrors.TypedError); ok {
-		typedErr = errors
-	}
-
-	if typedErr != nil {
-		switch typedErr.Type() {
-		case semvererrors.ErrorTypeAuthentication:
-			cmd.PrintErrln("Error: Authentication failed. Please check your GitHub token.")
-			return err
-		case semvererrors.ErrorTypeRateLimit:
-			cmd.PrintErrln("Error: GitHub API rate limit exceeded. Please try again later or authenticate with a token.")
-			return err
-		case semvererrors.ErrorTypeNotFound:
-			cmd.PrintErrln(fmt.Sprintf("Error: %v", err))
-			return err
-		case semvererrors.ErrorTypeParse:
-			cmd.PrintErrln(fmt.Sprintf("Error: Invalid version constraint: %v", err))
-			return err
-		case semvererrors.ErrorTypeNetwork:
-			cmd.PrintErrln(fmt.Sprintf("Error: Network error: %v", err))
-			return err
-		case semvererrors.ErrorTypeValidation:
-			cmd.PrintErrln(fmt.Sprintf("Error: Validation error: %v", err))
-			return err
-		}
-	}
-
-	// Generic error
-	cmd.PrintErrln(fmt.Sprintf("Error: %v", err))
-	return err
 }
