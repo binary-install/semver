@@ -77,8 +77,10 @@ func runResolve(cmd *cobra.Command, args []string) error {
 		t, err := tm.GetToken()
 		if err != nil {
 			// Continue without token (unauthenticated requests have lower rate limits)
-			cmd.PrintErrln("Warning: No GitHub token found. API rate limits will be restrictive.")
-			cmd.PrintErrln("Set GITHUB_TOKEN or GH_TOKEN environment variable for higher rate limits.")
+			cmd.PrintErrln("Warning: No GitHub token found. API rate limits will be restrictive (60 requests/hour).")
+			cmd.PrintErrln("To increase rate limits to 5,000 requests/hour, you can either:")
+			cmd.PrintErrln("  1. Set GITHUB_TOKEN environment variable: export GITHUB_TOKEN=ghp_...")
+			cmd.PrintErrln("  2. Use semver token management: semver token set")
 		} else {
 			token = t
 		}
