@@ -30,6 +30,8 @@ go get github.com/binary-install/semver
 
 ### CLI
 
+#### Version Resolution
+
 ```bash
 # Find exact version
 semver resolve golang/go@1.21.0
@@ -48,6 +50,25 @@ semver resolve --prerelease golang/go@^1.21.0
 
 # With custom token
 semver resolve --token ghp_xxxxx golang/go@^1.21.0
+```
+
+#### Token Management
+
+```bash
+# Set token interactively (hidden input)
+semver token set
+
+# Set token via argument
+semver token set ghp_your_token_here
+
+# Set token via stdin
+echo "ghp_your_token_here" | semver token set
+
+# Get current token (masked for security)
+semver token get
+
+# Delete stored token
+semver token delete
 ```
 
 ### Library

@@ -63,6 +63,15 @@ func (m *manager) SetToken(token string) error {
 	return nil
 }
 
+// DeleteToken removes the token from the system keyring.
+func (m *manager) DeleteToken() error {
+	err := keyring.Delete(keyringService, keyringAccount)
+	if err != nil && !isKeyringNotFoundError(err) {
+		return semvererrors.WrapError(err, semvererrors.ErrorTypeAuthentication, "failed to delete token from keyring")
+	}
+	return nil
+}
+
 // isKeyringNotFoundError checks if the error is a "not found" error from keyring.
 func isKeyringNotFoundError(err error) bool {
 	if err == nil {
