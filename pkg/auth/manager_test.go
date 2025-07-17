@@ -1,3 +1,5 @@
+// +build integration
+
 package auth_test
 
 import (
@@ -6,7 +8,46 @@ import (
 	"github.com/binary-install/semver/pkg/auth"
 )
 
-func TestTokenManager_DeleteToken(t *testing.T) {
+func TestTokenManager_SetToken_Integration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
+	tm := auth.NewTokenManager()
+
+	tests := []struct {
+		name    string
+		token   string
+		wantErr bool
+	}{
+		{
+			name:    "set valid token",
+			token:   "ghp_validtoken123",
+			wantErr: false,
+		},
+		{
+			name:    "set empty token",
+			token:   "",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tm.SetToken(tt.token)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SetToken() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestTokenManager_DeleteToken_Integration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	tm := auth.NewTokenManager()
 
 	// First, set a test token
@@ -21,10 +62,6 @@ func TestTokenManager_DeleteToken(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DeleteToken() error = %v", err)
 	}
-
-	// Try to get the token from keyring (should fail)
-	// Note: Environment variables might still have tokens
-	// so we can't reliably test that GetToken fails
 
 	// Try to delete again (should not error even if token doesn't exist)
 	err = tm.DeleteToken()
