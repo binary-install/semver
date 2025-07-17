@@ -104,7 +104,7 @@ func TestResolver_MaxSatisfying(t *testing.T) {
 			wantErr:    true,
 		},
 		{
-			name: "empty owner",
+			name:       "empty owner",
 			constraint: "^1.0.0",
 			want:       "",
 			wantErr:    true,
@@ -156,8 +156,8 @@ func TestResolver_MaxSatisfying(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name: "handle go prefix",
-			tags: []string{"go1.20.0", "go1.21.0", "go1.22.0"},
+			name:       "handle go prefix",
+			tags:       []string{"go1.20.0", "go1.21.0", "go1.22.0"},
 			constraint: "1.21.0",
 			options:    resolver.Options{IncludeTags: true},
 			want:       "go1.21.0",

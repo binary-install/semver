@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/binary-install/semver/pkg/github"
 	semvererrors "github.com/binary-install/semver/internal/errors"
+	"github.com/binary-install/semver/pkg/github"
 )
 
 // resolverImpl implements the Resolver interface.

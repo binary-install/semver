@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/cobra"
 	"github.com/binary-install/semver/pkg/auth"
 	"github.com/binary-install/semver/pkg/github"
 	"github.com/binary-install/semver/pkg/resolver"
+	"github.com/spf13/cobra"
 )
 
 var (
