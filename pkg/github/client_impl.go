@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	semvererrors "github.com/binary-install/semver/internal/errors"
 	"github.com/google/go-github/v57/github"
 	"golang.org/x/oauth2"
-	semvererrors "github.com/binary-install/semver/internal/errors"
 )
 
 const (

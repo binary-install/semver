@@ -52,8 +52,8 @@ func TestMaxSatisfying(t *testing.T) {
 				{Tag: "v1.2.0", Draft: false},
 				{Tag: "v2.0.0", Draft: false},
 			},
-			want:       "v1.2.0",
-			wantErr:    false,
+			want:    "v1.2.0",
+			wantErr: false,
 		},
 		{
 			name:       "with custom GitHub client",
@@ -124,8 +124,8 @@ func TestMaxSatisfying(t *testing.T) {
 			releases: []github.Release{
 				{Tag: "v1.0.0", Draft: false},
 			},
-			want:       "",
-			wantErr:    true,
+			want:    "",
+			wantErr: true,
 		},
 	}
 

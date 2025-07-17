@@ -4,14 +4,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zalando/go-keyring"
 	semvererrors "github.com/binary-install/semver/internal/errors"
+	"github.com/zalando/go-keyring"
 )
 
 const (
 	// Environment variables for GitHub token
-	envGitHubToken    = "GITHUB_TOKEN"
-	envGHToken        = "GH_TOKEN"
+	envGitHubToken = "GITHUB_TOKEN"
+	envGHToken     = "GH_TOKEN"
 
 	// Keyring service name
 	keyringService = "semver-resolver"
